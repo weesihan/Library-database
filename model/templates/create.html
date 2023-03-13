@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<body class="">
+  <div class="wrapper ">
+    <div class="sidebar" data-color="purple" data-background-color="white" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
+      <div class="logo"><a href="#" class="simple-text logo-normal">
+          <i class="material-icons">library_books</i>
+          Somerville Library
+        </a></div>
+      <div class="sidebar-wrapper">
+              <ul class="nav">
+              {% if session['admin'] == "False" %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="material-icons">dashboard</i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                {% elif session['admin'] == "True" %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('admin') }}">
+                    <i class="material-icons">dashboard</i>
+                      <p>Admin</p>
+                      </a>
+                    </li>
+                    <li class="nav-item active">
+                      <a class="nav-link" href="{{ url_for('create') }}">
+                    <i class="material-icons">content_paste</i>
+                      <p>Create</p>
+                      </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('search') }}">
+                    <i class="material-icons">search</i>
+                    <p>Search</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('settings') }}">
+                    <i class="material-icons">settings</i>
+                    <p>Settings</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand">Welcome back, {{session.username}}</a>
+          </div>
+          <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}"><h5><i class="material-icons">person</i>Logout</h5></a>
+			  </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <div class="content">
+        <div class="card card-nav-tabs">
+          <div class="card-header card-header-danger">
+
+              <!-- colors: "header-primary", "header-info", "header-success", "header-warning", "header-danger" -->
+              <div class="nav-tabs-navigation">
+                  <div class="nav-tabs-wrapper">
+                      <ul class="nav nav-tabs" data-tabs="tabs">
+                          <li class="nav-item">
+                              <a class="nav-link active" href="#addadmin" data-toggle="tab">Add Admin</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" href="#addbook" data-toggle="tab">Add Books</a>
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+          <div class="card-body ">
+            {% include "partial/error.html" %}
+            {% include "partial/success.html" %}
+              <div class="tab-content text-center">
+                <div class="tab-pane active" id="addadmin">
+                <h4 class="title">Create New Admin Accounts</h4>
+                <form method="post">
+                  <div class="form-group">
+                    <label for="admin_name">New Admin Username</label>
+                    <input type="text" maxlength="12" class="form-control" id="admin_name" name="admin_name">
+                  </div>
+                  <div class="form-group">
+                    <label for="admin_password">New Admin Password</label>
+                    <input type="password" maxlength="15" name="admin_password" id="admin_password" class="form-control" placeholder="">
+                  </div>
+                  <div class="td-actions text-right">
+                    <div class="form-group col-sm-12">
+                      <button type="submit" class="btn btn-danger btn-block">Create Account</button>
+                    </div>
+                  </div>
+                </form>
+                </div>
+                <div class="tab-pane" id="addbook">
+                  <form method="post">
+                    <div class="form-group">
+                      <label for="id">BookID*</label>
+                        <input type="text" class="form-control" id="id" name="id" placeholder="Assign a new book ID">
+                    </div>
+                    <div class="form-group">
+                      <label for="title">Title*</label>
+                      <input type="text" class="form-control" id="title" name="title" placeholder="">
+                    </div>
+                    <div class="form-group">
+                      <label for="authors">Author</label>
+                      <input type="text" class="form-control" id="authors" name="authors" placeholder="e.g. Charles Smith, Ronald Keith">
+                    </div>
+                    <div class="form-group">
+                      <label for="isbn">ISBN*</label>
+                      <input type="text" class="form-control" id="isbn" name="isbn" placeholder="International Standard Book Number">
+                    </div>
+                    <div class="form-group">
+                      <label for="pageCount">Page Count</label>
+                      <input type="text" class="form-control" id="pageCount" name="pageCount" placeholder="">
+                    </div>
+                    <div class="form-group">
+                      <label for="publishedDate">Published Date</label>
+                      <input type="text" class="form-control" id="publishedDate" name="publishedDate" placeholder="ONLY IN yyyy-mm-dd FORMAT">
+                    </div>
+                    <div class="form-group">
+                      <label for="thumbnailUrl">Thumbnail</label>
+                      <input type="text" class="form-control" id="thumbnailUrl" name="thumbnailUrl" placeholder="Insert thumbnail URL">
+                    </div>
+                    <div class="form-group">
+                      <label for="shortDescription">Short Description</label>
+                      <textarea type="text" class="form-control" id="shortDescription" name="shortDescription" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="longDescription">Long Description</label>
+                      <textarea class="form-control" id="longDescription" name="longDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="status">Status*</label>
+                      <input type="text" class="form-control" id="status" name="status" placeholder="ONLY PUBLISH OR MEAP">
+                    </div>
+                    <div class="form-group">
+                      <label for="categories">Categories</label>
+                      <input type="text" class="form-control" id="categories" name="categories" placeholder="e.g. Mobile, Open Source">
+                    </div>
+                    <div class="td-actions text-right">
+                      <div class="form-group col-sm-12">
+                        <button type="submit" class="btn btn-danger btn-block">Proceed</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        </div>
+        </div>
+    </div>
+  </div>
+</body>
+
+{% endblock %}

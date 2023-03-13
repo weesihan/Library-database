@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<body class="">
+  <div class="wrapper ">
+    <div class="sidebar" data-color="purple" data-background-color="white" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
+      <div class="logo"><a href="#" class="simple-text logo-normal">
+          <i class="material-icons">library_books</i>
+          Somerville Library
+        </a></div>
+      <div class="sidebar-wrapper">
+              <ul class="nav">
+              {% if session['admin'] == "False" %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="material-icons">dashboard</i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                {% elif session['admin'] == "True" %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('admin') }}">
+                    <i class="material-icons">dashboard</i>
+                      <p>Admin</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('create') }}">
+                    <i class="material-icons">content_paste</i>
+                      <p>Create</p>
+                      </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ url_for('search') }}">
+                    <i class="material-icons">search</i>
+                    <p>Search</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('settings') }}">
+                    <i class="material-icons">settings</i>
+                    <p>Settings</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand">Welcome back, {{session.username}}</a>
+          </div>
+          <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}"><h5><i class="material-icons">person</i>Logout</h5></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title">{{bookid}} {{title}}</h4>
+              <p class="card-category">{{shortinfo}}</p>
+            </div>
+          <div>
+          <div class="row">
+            <div class="col-lg-6 col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  {% include "partial/error.html" %}
+                  {% include "partial/success.html" %}
+                  <div class="embed-responsive embed-responsive-4by3 py-5 mb-3">
+                    {%if imageurl == "" %}
+                    <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{ url_for('static', filename='img/book_default.png') }}" />
+                    {% else %}
+                    <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{imageurl}}" />
+                    {% endif %}
+                  </div>
+                  <div class="list-group">
+                    {% if session['admin'] == "True" %}
+                    {% if bookuserstatus==0 %}
+                    <form method="post">
+                      <button type="submit" id="lock_action" name="lock_action" value=0 class="list-group-item list-group-item-action active">Lock Book</button>
+                    </form>
+                    {% elif bookuserstatus==5 %}
+                    <form method="post">
+                      <button type="submit" id="unlock_action" name="unlock_action" value=0 class="list-group-item list-group-item-action active">Unlock Book</button>
+                    </form>
+                    {% else %}
+                    <button type="submit" class="list-group-item list-group-item-action">Occupied by User</button>
+                    <h6></h6>
+                    <h5 class="card-title">Expected Return Date: {{duedate}}</h5>
+                    {% endif %}
+                    {% else %}
+                    {% if bookuserstatus==0 %}
+                    <form method="post">
+                      <button type="submit" id="borrow_action" name="borrow_action" value=0 class="list-group-item list-group-item-action active" aria-current="true">Borrow</button>
+                    </form>
+                    {% elif bookuserstatus==1 %}
+                    <form method="post">
+                      <button type="submit" id="reserve_action" name="reserve_action" value=0 class="list-group-item list-group-item-action active" aria-current="true">Reserve</button>
+                    </form>
+                    <h6></h6>
+                    <h5 class="card-title">Expected Return Date: {{duedate}}</h5>
+                    {% elif bookuserstatus==2 %}
+                    <button type="submit" class="list-group-item list-group-item-action">Unavailable</button>
+                    {% elif bookuserstatus==3 %}
+                    <form method="post">
+                      <button type="submit" id="extend_action" name="extend_action" value=0 class="list-group-item list-group-item-action active" aria-current="true">Extend</button>
+                    </form>
+                    <form method="post">
+                      <button type="submit" id="return_action" name="return_action" value=0 class="list-group-item list-group-item-action active">Return</button>
+                    </form>
+                    {% elif bookuserstatus==4 %}
+                    <form method="post">
+                      <button type="submit" id="cancel_action" name="cancel_action" value=0 class="list-group-item list-group-item-action active" aria-current="true">Cancel</button>
+                    </form>
+                    <h6></h6>
+                    <h5 class="card-title">Expected Return Date: {{duedate}}</h5>
+                    {% elif bookuserstatus==5 %}
+                    <button type="submit" class="list-group-item list-group-item-action">Unavailable</button>
+                    {% endif %}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="borrowings">
+                      <table class="table">
+                        <tbody>
+                          <tr>
+                            <td>Author</td>
+                            <td>{{authors}}</td>
+                          </tr>
+                          <tr>
+                            <td>ISBN</td>
+                            <td>{{isbn}}</td>
+                          </tr>
+                          <tr>
+                            <td>Page Count</td>
+                            <td>{{pages}}</td>
+                          </tr>
+                          <tr>
+                            <td>Published Date</td>
+                            <td>{{date}}</td>
+                          </tr>
+                          <tr>
+                            <td>Description</td>
+                            <td>{{longinfo}}</td>
+                          </tr>
+                          <tr>
+                            <td>Status</td>
+                            <td>{{status}}</td>
+                          </tr>
+                          <tr>
+                            <td>Categories</td>
+                            <td>{{category}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--JS Files-->
+</body>
+
+{% endblock %}

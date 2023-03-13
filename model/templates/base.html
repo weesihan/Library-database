@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <title>Somerville ILS System</title>
+    <link rel="apple-touch-icon" sizes="76x76" href="../static/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="../static/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>
+        {% block title %}{% endblock %}
+    </title>
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <!-- CSS Files -->
+    <link href="{{ url_for('static', filename='css/material-dashboard.css') }}" rel="stylesheet" />
+    <!--JS Files-->
+    <script src="/static/js/core/jquery.min.js"></script>
+    <script>
+    $(function(){
+        $("#advance_date").datepicker();
+    });
+    </script>
+    <script src="/static/js/core/popper.min.js"></script>
+    <script src="/static/js/core/bootstrap-material-design.min.js"></script>
+    <script src="/static/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+    <script src="/static/js/material-dashboard.js?v=2.1.2" type="text/javascript"></script>
+
+</head>
+
+{% block body %}{% endblock %}
+
+
+</html>

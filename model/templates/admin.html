@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<body class="">
+  <div class="wrapper ">
+    <div class="sidebar" data-color="purple" data-background-color="white" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
+      <div class="logo"><a href="#" class="simple-text logo-normal">
+          <i class="material-icons">library_books</i>
+          Somerville Library
+        </a></div>
+      <div class="sidebar-wrapper">
+              <ul class="nav">
+              {% if session['admin'] == "False" %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="material-icons">dashboard</i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                {% elif session['admin'] == "True" %}
+                  <li class="nav-item active">
+                      <a class="nav-link" href="{{ url_for('admin') }}">
+                    <i class="material-icons">dashboard</i>
+                      <p>Admin</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('create') }}">
+                    <i class="material-icons">content_paste</i>
+                      <p>Create</p>
+                      </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('search') }}">
+                    <i class="material-icons">search</i>
+                    <p>Search</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('settings') }}">
+                    <i class="material-icons">settings</i>
+                    <p>Settings</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand">Welcome back, {{session.username}}</a>
+          </div>
+          <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+			      		<a class="nav-link" href="{{ url_for('logout') }}"><h5><i class="material-icons">person</i>Logout</h5></a>
+			      	</li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <div class="content">
+        <div class="card card-nav-tabs">
+          <div class="card-header card-header-danger">
+              <!-- colors: "header-primary", "header-info", "header-success", "header-warning", "header-danger" -->
+              <div class="nav-tabs-navigation">
+                  <div class="nav-tabs-wrapper">
+                      <ul class="nav nav-tabs" data-tabs="tabs">
+                          <li class="nav-item">
+                              <a class="nav-link active" href="#borrowings" data-toggle="tab">Borrowings</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" href="#reservations" data-toggle="tab">Reservations</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" href="#fines" data-toggle="tab">Fines</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" href="#locked" data-toggle="tab">Locked Book</a>
+                        </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+          <div class="card-body ">
+              <div class="tab-content text-center">
+                  <div class="tab-pane active" id="borrowings">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead class="text-primary">
+                              <th>
+                                UserID
+                              </th>
+                              <th>
+                                BookID
+                              </th>
+                              <th>
+                                Title
+                              </th>
+                              <th>
+                                Due Date
+                              </th>
+                              <th>
+                                Actions
+                              </th>
+                            </thead>
+                            <tbody>
+                              {% for book in allBorrowedList %}
+                              <tr>
+                                  <td>{{book.user}}</td>
+                                  <td>{{book.id}}</td>
+                                  <td><a class="link" href="/books/{{book.id}}">{{book.title}}</a></td>
+                                  <td>{{book.due}}</td>
+                                  <td class="td-actions text-right">
+                                    <form action="/admin/" method="post">
+                                      <input value="{{book.user}}" id="extend_user" name="extend_user" hidden="true">
+                                      <button type="submit" rel="tooltip" id="extend_admin" name="extend_admin" value="{{book.id}}" title="Extend" class="btn btn-primary btn-link btn-sm">
+                                        <i class="material-icons">edit</i>
+                                      </button>
+                                    </form>
+                                    <form method="post">
+                                      <input value="{{book.user}}" id="return_user" name="return_user" hidden="true">
+                                      <button type="submit" rel="tooltip" id="return_admin" name="return_admin" value="{{book.id}}" title="Return" class="btn btn-primary btn-link btn-sm">
+                                        <i class="material-icons">schedule</i>
+                                      </button>
+                                    </form>
+                                  </td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                        </table>
+                      </div>
+                  </div>
+            <div class="tab-pane" id="reservations">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="text-primary">
+                    <th>
+                      UserID
+                    </th>
+                    <th>
+                      BookID
+                    </th>
+                    <th>
+                      Title
+                    </th>
+                    <th>
+                      Actions
+                    </th>
+                  </thead>
+                  <tbody>
+                    {% for book in allReservedList %}
+                    <tr>
+                      <td>{{book.user}}</td>
+                      <td>{{book.id}}</td>
+                      <td><a class="link" href="/books/{{book.id}}">{{book.title}}</a></td>
+                      <td class="td-actions text-right">
+                        <form action="/admin/" method="post">
+                          <input id="cancel_user" value={{book.user}} hidden="true">
+                          <button type="submit" rel="tooltip" id="cancel_admin" title="Cancel" value={{book.id}} class="btn btn-primary btn-link btn-sm">
+                            <i class="material-icons">close</i>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="fines">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class=" text-primary">
+                    <th>
+                      UserID
+                    </th>
+                    <th>
+                      Fines for Unreturned Books
+                    </th>
+                    <th>
+                      Fines for Returned Books
+                    </th>
+                    <th>
+                      Actions
+                    </th>
+                  </thead>
+                  <tbody>
+                    {% for user in allUserWithFines %}
+                    <tr>
+                      <td>{{user.id}}</td>
+                      <td>{{user.curr}}</td>
+                      <td>{{user.solid}}</td>
+                      <td class="td-actions text-right">
+                        <form method="post" action="/admin/">
+                          <input id="pay_user" name="pay_user" value={{user.id}} hidden="true">
+                          <button type="submit" rel="tooltip" id="pay_admin" name="pay_admin" value={{user.solid}} title="Pay All" class="btn btn-primary btn-link btn-sm">
+                            <i class="material-icons">payment</i>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="locked">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class=" text-primary">
+                    <th>
+                      Book ID
+                    </th>
+                    <th>
+                      Title
+                    </th>
+                    <th>
+                      Actions
+                    </th>
+                  </thead>
+                  <tbody>
+                    {% for locked in allLockedBooks %}
+                    <tr>
+                      <td>{{locked.id}}</td>
+                      <td><a class="link" href="/books/{{locked.id}}">{{locked.title}}</a></td>
+                      <td class="td-actions text-right">
+                        <form method="post" action="/admin/">
+                          <button type="submit" rel="tooltip" id="unlock_admin" name="unlock_admin" value={{locked.id}} title="Unlock" class="btn btn-primary btn-link btn-sm">
+                              <i class="material-icons">unlock</i>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        </div>
+    </div>
+  </div>
+</body>
+
+{% endblock %}

@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<body class="">
+    <div class="wrapper ">
+        <div class="sidebar" data-color="purple" data-background-color="white" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
+            <div class="logo"><a href="#" class="simple-text logo-normal">
+                <i class="material-icons">library_books</i>
+                Somerville Library
+              </a>
+            </div>
+            <div class="sidebar-wrapper">
+              <ul class="nav">
+              {% if session['admin'] == "False" %}
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="material-icons">dashboard</i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                {% elif session['admin'] == "True" %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('admin') }}">
+                    <i class="material-icons">content_paste</i>
+                      <p>Admin</p>
+                      </a>
+                    </li>
+                    <li class="nav-item active">
+                      <a class="nav-link" href="{{ url_for('create') }}">
+                    <i class="material-icons">content_paste</i>
+                      <p>Create</p>
+                      </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('search') }}">
+                    <i class="material-icons">search</i>
+                    <p>Search</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('settings') }}">
+                    <i class="material-icons">settings</i>
+                    <p>Settings</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+        </div>
+        <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+                <div class="container-fluid">
+                    <div class="navbar-wrapper">
+                        <a class="navbar-brand">Welcome back, {{session.username}}</a>
+                    </div>
+                    <div class="collapse navbar-collapse justify-content-end">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+			      		        <a class="nav-link" href="{{ url_for('logout') }}">
+                                    <h5><i class="material-icons">person</i>Logout</h5>
+                                </a>
+			      	        </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-6 d-flex">
+                            <div class="card card-stats">
+                                <div class="card-header card-header-warning card-header-icon">
+                                    <div class="card-icon">
+                                        <i class="material-icons">menu_book</i>
+                                    </div>
+                                    <p class="card-category">No. of Borrowed Books</p>
+                                    <h3 class="card-title">{{borrowedNo}}/4
+                                        <small>books</small>
+                                    </h3>
+                                </div>
+                                <div class="card-footer">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6 d-flex">
+                            <div class="card card-stats">
+                                <div class="card-header card-header-info card-header-icon">
+                                    <div class="card-icon">
+                                        <i class="material-icons">book_online</i>
+                                    </div>
+                                    <p class="card-category">No. of Book Reservations</p>
+                                    <h3 class="card-title">
+                                        {{reservedNo}}
+                                        <small>books</small>
+                                    </h3>
+                                </div>
+                                <div class="card-footer">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="card card-stats">
+                                <div class="card-header card-header-danger card-header-icon">
+                                    <div class="card-icon">
+                                        <i class="material-icons">info_outline</i>
+                                    </div>
+                                    <p class="card-category">Fines for Overdue Books</p>
+                                    <h3 class="card-title">$ {{fines}}</h3>
+                                </div>
+                                <div class="card-footer">
+                                    {% if fines > 0 %}
+                                    <div class="stats text-danger">
+                                        Please {% if current_fines > 0 %}return your overdue books first{% if fines > current_fines %} and {% endif %}{% endif %}{% if solidated_fines > 0 %}pay your fines as soon as possible{% endif %}.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card">
+                                <div class="card-header card-header-primary">
+                                    <h4 class="card-title">Current Borrowings</h4>
+                                    <p class="card-category">All borrowed books</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="borrowings">
+                                            <table class="table table-hover">
+                                                <thead class="text-primary">
+                                                    <th>#</th>
+                                                    <th>Title</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </thead>
+                                                <tbody>
+                                                    {% for book in borrowedList %}
+                                                    <tr>
+                                                        <td>{{book.id}}</td>
+                                                        <td><a class="link" href="/books/{{book.id}}">{{book.title}}</a></td>
+                                                        <td>Due on {{book.due}}</td>
+                                                        <td class="td-actions text-right">
+                                                            <form action='/dashboard/' method="post">
+                                                                <button type="submit" rel="tooltip" title="Extend" id="extend" name="extend" value={{book.id}}
+                                                                    class="btn btn-primary btn-link btn-sm">
+                                                                    <i class="material-icons">edit</i>
+                                                                </button>
+                                                                <button type="submit" rel="tooltip" title="Return" id="return" name="return" value={{book.id}}
+                                                                    class="btn btn-primary btn-link btn-sm">
+                                                                    <i class="material-icons">system_update_alt</i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card">
+                                <div class="card-header card-header-primary">
+                                    <h4 class="card-title">Current Reservations</h4>
+                                    <p class="card-category">All reserved books</p>
+                                </div>
+                                <div class="card-body table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="text-primary">
+                                            <th>#</th>
+                                            <th>Title</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </thead>
+                                        <tbody>
+                                            {% for book in reservedList %}
+                                            <tr>
+                                                <td>{{book.id}}</td>
+                                                <td><a class="link" href="/books/{{book.id}}">{{book.title}}</a></td>
+                                                <td>Borrowed till {{book.due}}</td>
+                                                <td class="td-actions text-right">
+                                                    <form action='/dashboard/' method="post">
+                                                        <button type="submit" rel="tooltip" title="Cancel" id="cancel" name="cancel" value={{book.id}} class="btn btn-danger btn-link btn-sm">
+                                                            <i class="material-icons">close</i>
+                                                        </button>
+                                                    </form>
+
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% include "partial/success.html" %}
+                        {% include "partial/error.html" %}
+                        {% if fines != 0 %}
+                        <div class="card">
+                            <div class="card-header card-header-danger">
+                              <h4 class="card-title">Payment of Fines</h4>
+                              <p class="card-category">Pay Fines for All Overdue Books</p>
+                            </div>
+                            <div class="card-body">
+                              <div class="container">
+                                  <div class="products">
+                                    <h4 class="title">Total Fines</h4>
+                                    <div class="item">
+                                      <span class="price">$ {{fines}}</span>
+                                    </div>
+                                    {% if current_fines != 0 %}
+                                      <h4 class="title">Please return your overdue books first before paying these fines!</h4>
+                                      <div class="item">
+                                        <span class="price">$ {{current_fines}}</span>
+                                      </div>
+                                    {% endif %}
+                                  </div>
+                                  {% if solidated_fines != 0 %}
+                                    <h4 class="title">Fines that can be paid now by Credit / Debit Card:</h4>
+                                    <div class="item">
+                                        <span class="price">$ {{solidated_fines}}</span>
+                                      </div>
+
+                                  <div class="card-details">
+                                      <form method="post">
+                                    <h3 class="title">Credit Card Details</h3>
+                                    <div class="row">
+                                      <div class="form-group col-sm-7">
+                                        <label for="card-holder"></label>
+                                        <input id="card-holder" name="card-holder" type="text" class="form-control" placeholder="Card Holder Name" aria-label="Card Holder" aria-describedby="basic-addon1">
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="month">Expiration Date</label>
+                                        <div class="input-group expiration-date">
+                                          <input type="text" id="month" name="month" class="form-control" maxlength="2" placeholder="MM" aria-label="MM" aria-describedby="basic-addon1">
+                                          <span class="date-separator">/</span>
+                                          <input type="text" id="year" name="year" class="form-control" maxlength="2" placeholder="YY" aria-label="YY" aria-describedby="basic-addon1">
+                                        </div>
+                                      </div>
+                                      <div class="form-group col-sm-7">
+                                        <label for="card-number"></label>
+                                        <input id="card-number" name="card-number" type="text" class="form-control" placeholder="Card Number" aria-label="Card Holder" aria-describedby="basic-addon1">
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="cvv"></label>
+                                        <input id="cvv" name="cvv" type="password" maxlength="3" class="form-control" placeholder="CVV" aria-label="Card Holder" aria-describedby="basic-addon1">
+                                      </div>
+                                      <div class="form-group col-sm-12">
+                                        <button type="submit" id="pay" name="pay" value="{{solidated_fines}}" class="btn btn-danger btn-block">Proceed</button>
+                                      </div>
+                                    </div>
+                                    <form method="post">
+                                  </div>
+
+                              </div>
+                                {% endif %}
+                            </div>
+                          </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

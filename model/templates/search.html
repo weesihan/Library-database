@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<body class="">
+  <div class="wrapper ">
+    <div class="sidebar" data-color="purple" data-background-color="white" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
+      <div class="logo"><a href="#" class="simple-text logo-normal">
+          <i class="material-icons">library_books</i>
+          Somerville Library
+        </a></div>
+      <div class="sidebar-wrapper">
+              <ul class="nav">
+              {% if session['admin'] == "False" %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('dashboard') }}">
+                    <i class="material-icons">dashboard</i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                {% elif session['admin'] == "True" %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('admin') }}">
+                    <i class="material-icons">dashboard</i>
+                      <p>Admin</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('create') }}">
+                    <i class="material-icons">content_paste</i>
+                      <p>Create</p>
+                      </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item active">
+                  <a class="nav-link" href="{{ url_for('search') }}">
+                    <i class="material-icons">search</i>
+                    <p>Search</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('settings') }}">
+                    <i class="material-icons">settings</i>
+                    <p>Settings</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+    </div>
+    <div class="main-panel">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand">Welcome back, {{session.username}}</a>
+          </div>
+          <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+			      		<a class="nav-link" href="{{ url_for('logout') }}"><h5><i class="material-icons">person</i>Logout</h5></a>
+			      	</li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- End Navbar -->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-12 col-md-12">
+              <div class="card">
+                <div class="card-header card-header-tabs card-header-info">
+                  <div class="nav-tabs-navigation">
+                    <div class="nav-tabs-wrapper">
+                      <span class="nav-tabs-title">Book Search:</span>
+                      <ul class="nav nav-tabs" data-tabs="tabs">
+                        <li class="nav-item">
+                          <a class="nav-link active" href="#simple" data-toggle="tab">
+                            <i class="material-icons">manage_search</i> Simple
+                            <div class="ripple-container"></div>
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#isbn" data-toggle="tab">
+                            <i class=material-icons>tag</i> isbn
+                            <div class="ripple-container"></div>
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#advanced" data-toggle="tab">
+                            <i class="material-icons">code</i> Advanced
+                            <div class="ripple-container"></div>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="simple">
+                      <div class="input-group no-border">
+                        <form method="post">
+                        <input type="text" value="" id="simple_input" name="simple_input" class="form-control" placeholder="Search by Keywords">
+                        <button type="submit" class="btn btn-primary btn-round btn-just-icon">
+                          <i class="material-icons">search</i>
+                          <div class="ripple-container"></div>
+                        </button>
+                          </form>
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="isbn">
+                      <div class="input-group no-border">
+                        <form method="post">
+                          <input type="text" value="" id="isbn_input" name="isbn_input" class="form-control" placeholder="Search by ISBN">
+                          <button type="submit" class="btn btn-primary btn-round btn-just-icon">
+                            <i class="material-icons">search</i>
+                            <div class="ripple-container"></div>
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                    <div class="tab-pane" id="advanced">
+                      <form class="navbar-form" method="post">
+                        <div class="row mt-1 px-3">
+                          <h6 class="text-primary">Please fill in <strong><u>at least one </u></strong>field before submitting.</h6>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col-lg-12">
+                            <div class="form-group">
+                              <label class="form-control-label">Keywords</label>
+                              <input type="text" id="advanced_keyword" name="advanced_keyword" class="form-control" id="advancedKeywords">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label class="form-control-label">Author</label>
+                              <input type="text" class="form-control" id="advanced_author" name="advanced_author">
+                            </div>
+                          </div>
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label class="form-control-label">Number of Pages <small>(Must be integers)</small></label>
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <input type="text" class="form-control" placeholder="Min." id="advanced_min_page" name="advanced_min_page">
+                                </div>
+                                <div class="col-lg-6">
+                                  <input type="text" class="form-control" placeholder="Max." id="advanced_max_page" name="advanced_max_page">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label for="advanced_min_date" class="form-control-label">Publication Date <small>(Min - Max)</small></label>
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <input class="form-control" type="date" placeholder="Min." id="advanced_min_date" name="advanced_min_date">
+                                </div>
+                                <div class="'col-lg-6">
+                                  <input class="form-control" type="date" placeholder="Max." id="advanced_max_date" name="advanced_max_date">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label for="category">Category</label>
+                              <select class="form-control selectpicker" data-style="btn btn-link" id="category" name="category">
+                                <option selected>---</option>
+                                <option>Business</option>
+                                <option>Client-Server</option>
+                                <option>Computer Graphics</option>
+                                <option>Internet</option>
+                                <option>Java</option>
+                                <option>Microsoft</option>
+                                <option>Microsoft .NET</option>
+                                <option>Mobile</option>
+                                <option>Mobile Technology</option>
+                                <option>Networking</option>
+                                <option>Object-Oriented Programming</option>
+                                <option>Open Source</option>
+                                <option>P</option>
+                                <option>Perl</option>
+                                <option>PowerBuilder</option>
+                                <option>Programming</option>
+                                <option>Python</option>
+                                <option>Software Engineering</option>
+                                <option>SOA</option>
+                                <option>Theory</option>
+                                <option>Web Development</option>
+                                <option>XML</option>
+                                <option>Miscellaneous</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-lg-4">
+                            <div class="form-group">
+                              <label class="form-control-label">Status</label>
+                              <div class="row">
+                                <div class="col-lg-4">
+                                  <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="published" name="published" checked>
+                                    <label class="custom-control-label" for="published">Published</label>
+                                  </div>
+                                </div>
+                                <div class="col-lg-4">
+                                  <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="meap" name="meap" checked>
+                                    <label class="custom-control-label" for="meap">MEAP</label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary pt-2 pull-right" id="advanced_submit" name="advanced_submit" value="true" on-click="myFunction()">Search</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {% if results=="" %}
+            <div class="col-lg-2 d-flex">
+              <div class="card-body">
+                No results found.
+              </div>
+            </div>
+            {% endif %}
+            {% for book in results %}
+            <div class="col-lg-2 d-flex">
+              <div class="card">
+                <a href = "{{ url_for('books', id=book.id) }}">
+                  <div class="card-body">
+                    <div class="embed-responsive embed-responsive-4by3 py-5 mb-3">
+                      {% if book.imageurl == "" %}
+                      <img alt="Card image cap" class="card-img-top embed-responsive-item"  src="{{ url_for('static', filename='img/book_default.png') }}" />
+                      {% else %}
+                      <img alt="Card image cap" class="card-img-top embed-responsive-item" src="{{book.imageurl}}"/>
+                      {% endif %}}
+                    </div>
+                    {{book.id}}
+                    {{book.title}}
+                    <p><small><strong>{{book.authors}}</strong></small></p>
+
+                    {% if book.status == 0 %}
+                    <h6 class="text-success">Available</h6> <!-- if available, use green text-->
+                    {% elif book.status == 1 %}
+                    <h6 class="text-dark">Can Reserve</h6> <!-- if unavailable, use red text -->
+                    {% elif book.status == 2 %}
+                    <h6 class="text-danger">Reserved by User</h6> <!-- if unavailable, use red text -->
+                    {% elif book.status == 3 %}
+                    <h6 class="text-danger">Unavailable</h6> <!-- if unavailable, use red text -->
+                    {% endif %}
+                  </div>
+                </a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+
+{% endblock %}
